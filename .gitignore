@@ -1,0 +1,12 @@
+.env
+chatbot/.env
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+_site/
+chatbot/data/*.db
+chatbot/data/*.xlsx
+outputs/
+.pnpm-store/
+*.docx
