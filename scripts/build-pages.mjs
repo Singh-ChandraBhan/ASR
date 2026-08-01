@@ -28,6 +28,7 @@ if (chatbotApiUrl) {
 
 await fs.writeFile(path.join(outputDirectory, "index.html"), html);
 await fs.cp("assets", path.join(outputDirectory, "assets"), { recursive: true });
+await fs.cp("commerce", path.join(outputDirectory, "commerce"), { recursive: true });
 await fs.writeFile(path.join(outputDirectory, ".nojekyll"), "");
 
 console.log(`GitHub Pages artifact created in ${outputDirectory}`);
