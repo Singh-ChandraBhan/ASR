@@ -21,6 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 
 
+# ---------------------------------------------------------------------------
+# API contracts: browser input and model output are validated at the boundary.
+# ---------------------------------------------------------------------------
 class Message(BaseModel):
     role: str = Field(pattern="^(user|assistant)$")
     content: str = Field(min_length=1, max_length=4000)
@@ -87,6 +90,9 @@ Do not request passwords, payment-card details, government IDs, or confidential 
 When sufficient information is collected, include: Intent, Product, Specification, Quantity, Budget or Price Range, Location, Required Date, Recommended Action, Missing Information, and Lead Priority. End with exactly one applicable action: “Request a quotation”, “Submit your product offer”, or “Speak with the ASR team”. Be professional, friendly, and concise."""
 
 
+# ---------------------------------------------------------------------------
+# Configuration and persistence helpers.
+# ---------------------------------------------------------------------------
 def require_env(name: str) -> str:
     value = os.getenv(name)
     if not value:
@@ -158,9 +164,13 @@ def admin_page():
 
 @app.post("/api/customers", status_code=201)
 def create_customer(request: CustomerRequest):
+    """Enquiry flow: validate (Pydantic) -> save -> notify -> return ID."""
     try:
+        # Step 1: Convert the already validated API contract to storage data.
         customer = request.model_dump()
+        # Step 2: Save before notifying so email failure cannot lose the lead.
         customer_id = get_customer_repository().create(customer)
+        # Step 3: Report notification status separately from storage status.
         email = notify_new_customer(customer_id, customer)
         return {"saved": True, "customer_id": customer_id, "excel": "saved", "email": email}
     except PermissionError as exc:
@@ -171,8 +181,11 @@ def create_customer(request: CustomerRequest):
 
 @app.post("/api/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
+    """Chat flow: build context -> call model -> gate approval -> reply."""
     try:
+        # Step 1: Keep only the bounded conversation window accepted by the API.
         conversation = [item.model_dump() for item in request.history[-16:]] + [{"role": "user", "content": request.message}]
+        # Step 2: Load credentials and request schema-validated model output.
         client = OpenAI(api_key=require_env("OPENAI_API_KEY"))
         response = client.responses.parse(
             model=os.getenv("OPENAI_MODEL", "gpt-5.6-sol"),
@@ -185,6 +198,7 @@ def chat(request: ChatRequest):
         decision = response.output_parsed
         if not decision:
             raise RuntimeError("The model returned no structured response.")
+        # Step 3: Never return restricted commercial commitments directly.
         if decision.requires_approval:
             approval = create_approval(request, decision)
             return ChatResponse(
@@ -207,6 +221,7 @@ def list_approvals():
 
 @app.patch("/api/approvals/{approval_id}", dependencies=[Depends(require_admin)])
 def review_approval(approval_id: str, review: ApprovalReview):
+    """Admin flow: authenticate dependency -> find -> review -> persist."""
     with approval_lock:
         items = read_approvals()
         item = next((entry for entry in items if entry["id"] == approval_id), None)

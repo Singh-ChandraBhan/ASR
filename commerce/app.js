@@ -36,7 +36,8 @@ function addMessage(content, kind) {
   return article;
 }
 
-form.addEventListener("submit", async (event) => {
+// Chat flow: read -> render -> call API -> render result.
+async function handleChatSubmit(event) {
   event.preventDefault();
   const content = input.value.trim();
   if (!content) return;
@@ -54,11 +55,14 @@ form.addEventListener("submit", async (event) => {
     waiting.textContent = error.message;
     waiting.classList.add("error");
   } finally { form.querySelector("button").disabled = false; input.focus(); }
-});
+}
 
-document.querySelectorAll(".intake-form").forEach((intakeForm) => {
-  intakeForm.addEventListener("submit", async (event) => {
+form.addEventListener("submit", handleChatSubmit);
+
+// Intake flow: read fields -> build summary -> submit buyer or continue seller chat.
+async function handleIntakeSubmit(event) {
     event.preventDefault();
+    const intakeForm = event.currentTarget;
     const values = Object.fromEntries(new FormData(intakeForm));
     const labels = intakeForm.dataset.intent === "buy"
       ? { product: "Product", specification: "Specification", quantity: "Quantity", budget: "Budget", location: "Delivery location", date: "Required date", details: "Additional details" }
@@ -94,8 +98,9 @@ document.querySelectorAll(".intake-form").forEach((intakeForm) => {
     input.value = content;
     form.requestSubmit();
     intakeForm.reset();
-  });
-});
+}
+
+document.querySelectorAll(".intake-form").forEach((intakeForm) => intakeForm.addEventListener("submit", handleIntakeSubmit));
 
 input.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); form.requestSubmit(); }
@@ -112,7 +117,8 @@ const trackingForm = document.querySelector("#tracking-form");
 const trackingResult = document.querySelector("#tracking-result");
 const workflowStages = ["submitted", "sourcing", "confirmed", "delivery", "completed"];
 
-trackingForm.addEventListener("submit", async (event) => {
+// Tracking flow: verify reference -> fetch safe status -> build visual timeline.
+async function handleTrackingSubmit(event) {
   event.preventDefault();
   trackingResult.textContent = "Checking request...";
   try {
@@ -144,4 +150,6 @@ trackingForm.addEventListener("submit", async (event) => {
     trackingResult.textContent = error.message;
     trackingResult.className = "error";
   }
-});
+}
+
+trackingForm.addEventListener("submit", handleTrackingSubmit);
