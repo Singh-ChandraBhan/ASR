@@ -29,6 +29,19 @@ if (chatbotApiUrl) {
 await fs.writeFile(path.join(outputDirectory, "index.html"), html);
 await fs.cp("assets", path.join(outputDirectory, "assets"), { recursive: true });
 await fs.cp("commerce", path.join(outputDirectory, "commerce"), { recursive: true });
+
+const commerceApiUrl = (process.env.PAGES_COMMERCE_API_URL || "").trim();
+if (commerceApiUrl) {
+  const parsed = new URL(commerceApiUrl);
+  if (parsed.protocol !== "https:") throw new Error("PAGES_COMMERCE_API_URL must use HTTPS.");
+  const commerceIndex = path.join(outputDirectory, "commerce", "index.html");
+  let commerceHtml = await fs.readFile(commerceIndex, "utf8");
+  commerceHtml = commerceHtml.replace(
+    /(<meta name="commerce-api" content=")[^"]*(">)/,
+    `$1${parsed.href.replace(/\/$/, "")}$2`,
+  );
+  await fs.writeFile(commerceIndex, commerceHtml);
+}
 await fs.writeFile(path.join(outputDirectory, ".nojekyll"), "");
 
 console.log(`GitHub Pages artifact created in ${outputDirectory}`);

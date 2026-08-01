@@ -3,6 +3,22 @@ const input = document.querySelector("#input");
 const messagesEl = document.querySelector("#messages");
 const sessionId = crypto.randomUUID();
 const messages = [];
+const configuredApi = document.querySelector('meta[name="commerce-api"]')?.content.trim();
+const apiBase = configuredApi || (["localhost", "127.0.0.1"].includes(window.location.hostname) ? window.location.origin : "");
+
+async function requestJson(path, options) {
+  if (!apiBase) {
+    throw new Error("Online submissions are temporarily unavailable. Please email info@asrglobalsolutions.com.");
+  }
+  const response = await fetch(`${apiBase}${path}`, options);
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    throw new Error("The online service is temporarily unavailable. Please email info@asrglobalsolutions.com.");
+  }
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
 
 document.querySelectorAll(".intent").forEach((button) => {
   button.addEventListener("click", () => {
@@ -30,9 +46,7 @@ form.addEventListener("submit", async (event) => {
   const waiting = addMessage("Aira is reviewing your requirement…", "bot muted");
   form.querySelector("button").disabled = true;
   try {
-    const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId, messages }) });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Request failed");
+    const data = await requestJson("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId, messages }) });
     waiting.remove();
     addMessage(data.reply, "bot");
     messages.push({ role: "assistant", content: data.reply });
@@ -55,7 +69,7 @@ document.querySelectorAll(".intake-form").forEach((intakeForm) => {
       const submitButton = intakeForm.querySelector('button[type="submit"]');
       submitButton.disabled = true;
       try {
-        const response = await fetch("/api/requirements", {
+        const result = await requestJson("/api/requirements", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -64,8 +78,6 @@ document.querySelectorAll(".intake-form").forEach((intakeForm) => {
             requirement: Object.fromEntries(Object.keys(labels).filter((key) => values[key]?.trim()).map((key) => [key, values[key].trim()]))
           })
         });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Could not submit requirement");
         document.querySelector('[data-panel="chat-panel"]').click();
         addMessage(content, "user");
         addMessage(`Your requirement has been sent to the ASR admin for review. Reference: ${result.id}. You will receive the quotation at ${values.customerEmail} after approval.`, "bot");
@@ -104,13 +116,11 @@ trackingForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   trackingResult.textContent = "Checking request...";
   try {
-    const response = await fetch("/api/requirements/track", {
+    const result = await requestJson("/api/requirements/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: document.querySelector("#tracking-id").value.trim().toUpperCase(), email: document.querySelector("#tracking-email").value.trim() })
     });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Could not track request");
     const currentIndex = workflowStages.indexOf(result.stage);
     const timeline = document.createElement("ol");
     timeline.className = "status-timeline";
