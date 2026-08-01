@@ -4,15 +4,15 @@ Set-Location $chatbotDirectory
 
 if (-not (Test-Path ".env")) {
     Copy-Item ".env.example" ".env"
-    Write-Host "Created .env. Add HF_TOKEN and PINECONE_API_KEY, then run this script again." -ForegroundColor Yellow
+    Write-Host "Created .env. Add OPENAI_API_KEY and ADMIN_TOKEN, then run this script again." -ForegroundColor Yellow
     exit 1
 }
 
 $environmentText = Get-Content ".env" -Raw
-$missingHuggingFaceKey = $environmentText -match "(?m)^HF_TOKEN=(hf_replace_with|hf_your_token)"
-$missingPineconeKey = $environmentText -match "(?m)^PINECONE_API_KEY=(pcsk_replace_with|pcsk_your_key)"
-if ($missingHuggingFaceKey -or $missingPineconeKey) {
-    Write-Host "Add your real HF_TOKEN and PINECONE_API_KEY to chatbot/.env first." -ForegroundColor Yellow
+$missingOpenAIKey = $environmentText -match "(?m)^OPENAI_API_KEY=(replace_with|sk-your|your_)"
+$missingAdminToken = $environmentText -match "(?m)^ADMIN_TOKEN=(replace_with|change_me|your_)"
+if ($missingOpenAIKey -or $missingAdminToken) {
+    Write-Host "Add your real OPENAI_API_KEY and ADMIN_TOKEN to .env first." -ForegroundColor Yellow
     exit 1
 }
 

@@ -6,14 +6,14 @@ from email.message import EmailMessage
 logger = logging.getLogger(__name__)
 
 
-def notify_new_customer(customer_id: str, customer: dict) -> None:
+def notify_new_customer(customer_id: str, customer: dict) -> dict[str, str]:
     """Email the ASR team after a lead is safely stored.
 
     REMARK: Notifications are deliberately best-effort. A temporary SMTP issue
     must never undo or reject an enquiry that has already been saved.
     """
     if os.getenv("NOTIFICATIONS_ENABLED", "false").lower() != "true":
-        return
+        return {"status": "not_configured", "error": "Email notifications are disabled."}
 
     host = os.getenv("SMTP_HOST", "")
     username = os.getenv("SMTP_USERNAME", "")
@@ -22,7 +22,7 @@ def notify_new_customer(customer_id: str, customer: dict) -> None:
     sender = os.getenv("NOTIFY_FROM_EMAIL", username)
     if not all([host, username, password, recipient, sender]):
         logger.warning("Email notification skipped: SMTP configuration is incomplete.")
-        return
+        return {"status": "not_configured", "error": "SMTP configuration is incomplete."}
 
     message = EmailMessage()
     message["Subject"] = f"New ASR enquiry: {customer_id}"
@@ -54,5 +54,7 @@ Requirement:
                 server.starttls()
             server.login(username, password)
             server.send_message(message)
-    except Exception:
+        return {"status": "sent", "error": ""}
+    except Exception as exc:
         logger.exception("Customer %s was stored, but its email notification failed.", customer_id)
+        return {"status": "failed", "error": str(exc)}
