@@ -38,7 +38,10 @@ document.querySelector('#enquiryForm').addEventListener('submit', async event =>
     if (!response.ok) throw new Error('Save failed');
     const result = await response.json();
     // Show the generated ID so the customer can reference this enquiry later.
-    notice.textContent = `Thank you! Your enquiry ${result.customer_id} has been saved. Our team will contact you.`;
+    const emailMessage = result.email?.status === 'sent'
+      ? 'The ASR team has also been notified by email.'
+      : 'The enquiry is saved for the ASR team; email notification is not currently available.';
+    notice.textContent = `Thank you! Your enquiry ${result.customer_id} has been saved in Excel. ${emailMessage}`;
     notice.style.cssText = 'display:block';
     form.reset();
   } catch {

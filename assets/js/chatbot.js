@@ -1,5 +1,5 @@
 (() => {
-  const API_URL = document.querySelector('meta[name="chatbot-api"]')?.content || 'http://localhost:8000/api/chat';
+  const API_URL = document.querySelector('meta[name="chatbot-api"]')?.content || '/api/chat';
   const panel = document.querySelector('#chatPanel');
   const launcher = document.querySelector('#chatLauncher');
   const close = document.querySelector('#chatClose');
@@ -7,6 +7,7 @@
   const input = document.querySelector('#chatInput');
   const messages = document.querySelector('#chatMessages');
   const history = [];
+  const sessionId = crypto.randomUUID();
 
   function toggle(force) {
     const open = force ?? !panel.classList.contains('open');
@@ -59,7 +60,7 @@
     try {
       const response = await fetch(API_URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: question, history: requestHistory }),
+        body: JSON.stringify({ message: question, history: requestHistory, session_id: sessionId }),
         // Avoid leaving the customer waiting when the AI backend is stopped.
         signal: AbortSignal.timeout(6000)
       });
