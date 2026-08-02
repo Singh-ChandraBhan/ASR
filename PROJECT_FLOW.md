@@ -89,6 +89,7 @@ The floating ASR chatbot calls `POST /api/chat` in the Python API. It uses `know
 ## 8. GoDaddy deployment
 
 See `deployment/godaddy/README.md` for the full cPanel and VPS procedures.
+For other providers, see `DEPLOYMENT_GUIDE.md` for static, PaaS, VPS, and container deployment patterns.
 
 - Run `deployment/godaddy/build-static.ps1` for a cPanel upload package.
 - Upload the contents of `deployment-output/godaddy-static/public_html/` to the remote `public_html` folder.
