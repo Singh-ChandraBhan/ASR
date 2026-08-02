@@ -85,3 +85,14 @@ The floating ASR chatbot calls `POST /api/chat` in the Python API. It uses `know
 4. Never commit `.env`, databases, Excel customer files, or approval records.
 5. Run `npm.cmd test` and `node --check` before pushing.
 6. Build the Pages artifact and verify all project-relative links.
+
+## 8. GoDaddy deployment
+
+See `deployment/godaddy/README.md` for the full cPanel and VPS procedures.
+
+- Run `deployment/godaddy/build-static.ps1` for a cPanel upload package.
+- Upload the contents of `deployment-output/godaddy-static/public_html/` to the remote `public_html` folder.
+- Run `deployment/godaddy/build-vps.ps1` for the complete Node and Python application.
+- Upload `deployment-output/godaddy-vps/app/` to `/var/www/asr` on the VPS.
+
+The generated `deployment-output/` folder is ignored by Git because it is a local build artifact.

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Aira Admin Desk</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+  <main class="shell admin">
+    <header><div class="mark">A</div><div><h1>Admin Desk</h1><p>Customer quotations and commercial approvals</p></div></header>
+    <form id="login" class="token"><input id="token" type="password" placeholder="Admin token" required><button>Open admin</button></form>
+    <p id="admin-error" class="error"></p>
+    <nav id="admin-tabs" class="intent-picker" hidden>
+      <button type="button" class="intent active" data-admin-panel="requests-panel">Customer requests</button>
+      <button type="button" class="intent" data-admin-panel="approvals-panel">AI approvals</button>
+    </nav>
+    <section id="requests-panel" class="queue"></section>
+    <section id="approvals-panel" class="queue" hidden></section>
+  </main>
+  <script src="/admin.js" type="module"></script>
+</body>
+</html>

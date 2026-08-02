@@ -10,3 +10,5 @@ chatbot/data/*.xlsx
 outputs/
 .pnpm-store/
 *.docx
+
+deployment-output/

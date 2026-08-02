@@ -1,0 +1,61 @@
+.tracking-panel {
+  padding: 22px;
+}
+
+.tracking-panel[hidden] {
+  display: none;
+}
+
+.tracking-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.tracking-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+#tracking-result {
+  margin-top: 26px;
+  display: grid;
+  gap: 12px;
+}
+
+.status-timeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.status-timeline li {
+  border-top: 4px solid #cfdad6;
+  padding-top: 9px;
+  color: #71807b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-timeline .complete,
+.status-timeline .current {
+  border-color: #0a6b50;
+  color: #0a6b50;
+}
+
+.status-timeline .current {
+  background: #e4f5ef;
+  padding: 9px 6px 6px;
+}
+
+@media (max-width: 650px) {
+  .tracking-form,
+  .status-timeline {
+    grid-template-columns: 1fr;
+  }
+}

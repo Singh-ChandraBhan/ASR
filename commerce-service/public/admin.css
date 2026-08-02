@@ -1,0 +1,33 @@
+.request-card p {
+  color: #50605b;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.request-card strong {
+  color: #172124;
+}
+
+.quote-fields {
+  display: grid;
+  grid-template-columns: 1fr 140px 180px;
+  gap: 10px;
+}
+
+.quote-fields textarea {
+  grid-column: 1 / -1;
+}
+
+.request-card .approved {
+  background: #087858;
+}
+
+@media (max-width: 650px) {
+  .quote-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-fields textarea {
+    grid-column: auto;
+  }
+}

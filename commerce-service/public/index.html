@@ -1,0 +1,70 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- Empty means same-origin API for local/VPS hosting. The deployment builder can inject an HTTPS API URL. -->
+  <meta name="commerce-api" content="">
+  <title>Aira | ASR Global Solutions</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/workflow.css">
+</head>
+<body>
+  <main class="shell">
+    <header><div class="mark">A</div><div><h1>Aira</h1><p>ASR Global Solutions Â· Commerce Engagement Assistant</p></div><a class="asr-link" href="/asr/">ASR website</a><a class="admin-link" href="/admin.html">Admin</a><span class="status">Online</span></header>
+    <nav class="intent-picker" aria-label="Choose requirement type">
+      <button type="button" class="intent active" data-panel="buyer-panel">I want to buy</button>
+      <button type="button" class="intent" data-panel="seller-panel">I want to sell</button>
+      <button type="button" class="intent" data-panel="chat-panel">General question</button>
+      <button type="button" class="intent" data-panel="tracking-panel">Track request</button>
+    </nav>
+    <section id="buyer-panel" class="intake-panel">
+      <div class="panel-heading"><div><h2>Create buyer requirement</h2><p>Tell Aira what product your business needs.</p></div><span>Buyer</span></div>
+      <form class="intake-form" data-intent="buy">
+        <label>Your name<input name="customerName" autocomplete="name" placeholder="Full name" required></label>
+        <label>Work email<input name="customerEmail" type="email" autocomplete="email" placeholder="you@company.com" required></label>
+        <label>Company<input name="customerCompany" autocomplete="organization" placeholder="Company name" required></label>
+        <label>Phone<input name="customerPhone" type="tel" autocomplete="tel" placeholder="Phone number" required></label>
+        <label>Product name<input name="product" placeholder="e.g. Industrial safety helmets" required></label>
+        <label>Specifications<input name="specification" placeholder="Material, size, standard, brand preference" required></label>
+        <label>Quantity<input name="quantity" placeholder="e.g. 500 units" required></label>
+        <label>Budget<input name="budget" placeholder="Total or per-unit budget and currency" required></label>
+        <label>Delivery location<input name="location" placeholder="City, state, country" required></label>
+        <label>Required date<input name="date" type="date" required></label>
+        <label class="wide">Additional details<textarea name="details" rows="2" placeholder="Packaging, certification, or other requirements" required></textarea></label>
+        <button class="wide" type="submit">Request quotation</button>
+      </form>
+    </section>
+    <section id="seller-panel" class="intake-panel" hidden>
+      <div class="panel-heading"><div><h2>Create seller offer</h2><p>Present your product to relevant business buyers.</p></div><span>Seller</span></div>
+      <form class="intake-form" data-intent="sell">
+        <label>Product name<input name="product" placeholder="e.g. Recycled packaging boxes" required></label>
+        <label>Brand<input name="brand" placeholder="Brand or manufacturer"></label>
+        <label>Specifications<input name="specification" placeholder="Material, dimensions, grade, certifications" required></label>
+        <label>Available quantity<input name="quantity" placeholder="e.g. 10,000 units" required></label>
+        <label>Minimum order quantity<input name="moq" placeholder="e.g. 500 units"></label>
+        <label>Price range<input name="price" placeholder="Range and currency"></label>
+        <label>Service locations<input name="location" placeholder="Cities, states, or countries served" required></label>
+        <label>Delivery capability<input name="delivery" placeholder="Lead time and shipping capability"></label>
+        <label class="wide">Additional details<textarea name="details" rows="2" placeholder="Warranty, customization, packaging, or terms"></textarea></label>
+        <button class="wide" type="submit">Submit product offer</button>
+      </form>
+    </section>
+    <section id="chat-panel" class="chat-panel" hidden>
+    <section id="messages" class="messages" aria-live="polite">
+      <article class="message bot">Hello, Iâ€™m Aira. Are you looking to buy, sell, request a quotation, or ask a general question?</article>
+    </section>
+    <section id="tracking-panel" class="tracking-panel" hidden>
+      <div class="panel-heading"><div><h2>Track your requirement</h2><p>Use the reference and email from your submission.</p></div><span>Status</span></div>
+      <form id="tracking-form" class="tracking-form">
+        <label>Request reference<input id="tracking-id" placeholder="REQ-XXXXXXXX" required></label>
+        <label>Work email<input id="tracking-email" type="email" placeholder="you@company.com" required></label>
+        <button type="submit">Check status</button>
+      </form>
+      <div id="tracking-result" aria-live="polite"></div>
+    </section>
+    <form id="chat-form"><textarea id="input" rows="1" maxlength="8000" placeholder="Describe your business requirementâ€¦" required></textarea><button type="submit">Send</button></form>
+    </section>
+    <p class="notice">Quotations, negotiations, payments, and contracts require manual ASR approval. Do not share sensitive information.</p>
+  </main>
+  <script src="/app.js" type="module"></script>
+</body></html>
+
+
